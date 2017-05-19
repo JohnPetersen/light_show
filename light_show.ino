@@ -11,7 +11,7 @@
 #define DIAL_POSITION_COUNT 24
 #define DEFAULT_PERIOD 50
 
-#define PATTERN_COUNT 6
+#define PATTERN_COUNT 9
 
 void (*patternFuncs[PATTERN_COUNT])(bool);
 int currentPattern = 0;
@@ -37,11 +37,14 @@ void setup()
   Serial.println("Starting the light show...");
 
   patternFuncs[0] = rainbowPattern;
-  patternFuncs[1] = scannerPattern;
-  patternFuncs[2] = scannerTwoPattern;
-  patternFuncs[3] = scannerTwoReversePattern;
-  patternFuncs[4] = randomPattern;
-  patternFuncs[5] = pointerPattern;
+  patternFuncs[1] = anotherRainbowPattern;
+  patternFuncs[2] = scannerPattern;
+  patternFuncs[3] = scannerTwoPattern;
+  patternFuncs[4] = scannerTwoReversePattern;
+  patternFuncs[5] = scannerFourPattern;
+  patternFuncs[6] = scannerFourReversePattern;
+  patternFuncs[7] = randomPattern;
+  patternFuncs[8] = pointerPattern;
   
   strip.begin();
   strip.setBrightness(50);  
@@ -199,9 +202,23 @@ void rainbowPattern(bool draw) {
   }
 }
 
+void anotherRainbowPattern(bool draw) {
+  if (draw) {
+    for (int i = 0; i < NUMPIXELS; i++) {
+      strip.setPixelColor(i, Wheel(frameCounter+(16*i)));
+    }
+    strip.show();
+  }
+  if (enc_action > 0) {
+    speedup();
+  } else if (enc_action < 0) {
+    slowdown();
+  }
+}
+
 void scannerPattern(bool draw) {
   if (draw) {
-    strip.setPixelColor((frameCounter-1)%NUMPIXELS, strip.Color(0, 0, 0));
+    strip.clear();
     strip.setPixelColor(frameCounter%NUMPIXELS, Wheel(frameCounter));
     strip.show();
   }
@@ -214,9 +231,8 @@ void scannerPattern(bool draw) {
 
 void scannerTwoPattern(bool draw) {
   if (draw) {
-    strip.setPixelColor((frameCounter-1)%NUMPIXELS, strip.Color(0, 0, 0));
+    strip.clear();
     strip.setPixelColor(frameCounter%NUMPIXELS, Wheel(frameCounter));
-    strip.setPixelColor((frameCounter+7)%NUMPIXELS, strip.Color(0, 0, 0));
     strip.setPixelColor((frameCounter+8)%NUMPIXELS, Wheel(frameCounter));
     strip.show();
   }
@@ -229,10 +245,27 @@ void scannerTwoPattern(bool draw) {
 
 void scannerFourPattern(bool draw) {
   if (draw) {
-    strip.setPixelColor((frameCounter-1)%NUMPIXELS, strip.Color(0, 0, 0));
+    strip.clear();
     strip.setPixelColor(frameCounter%NUMPIXELS, Wheel(frameCounter));
-    strip.setPixelColor((frameCounter+7)%NUMPIXELS, strip.Color(0, 0, 0));
+    strip.setPixelColor((frameCounter+4)%NUMPIXELS, Wheel(frameCounter));
     strip.setPixelColor((frameCounter+8)%NUMPIXELS, Wheel(frameCounter));
+    strip.setPixelColor((frameCounter+12)%NUMPIXELS, Wheel(frameCounter));
+    strip.show();
+  }
+  if (enc_action > 0) {
+    speedup();
+  } else if (enc_action < 0) {
+    slowdown();
+  }
+}
+
+void scannerFourReversePattern(bool draw) {
+  if (draw) {
+    strip.clear();
+    strip.setPixelColor(frameCounter%NUMPIXELS, Wheel(frameCounter));
+    strip.setPixelColor((frameCounter+4)%NUMPIXELS, Wheel(frameCounter+byte(64)));
+    strip.setPixelColor((frameCounter+8)%NUMPIXELS, Wheel(frameCounter+byte(128)));
+    strip.setPixelColor((frameCounter+12)%NUMPIXELS, Wheel(frameCounter+byte(192)));
     strip.show();
   }
   if (enc_action > 0) {
@@ -244,10 +277,9 @@ void scannerFourPattern(bool draw) {
 
 void scannerTwoReversePattern(bool draw) {
   if (draw) {
-    strip.setPixelColor((frameCounter-1)%NUMPIXELS, strip.Color(0, 0, 0));
+    strip.clear();
     strip.setPixelColor(frameCounter%NUMPIXELS, Wheel(frameCounter));
-    strip.setPixelColor((frameCounter+7)%NUMPIXELS, strip.Color(0, 0, 0));
-    strip.setPixelColor((frameCounter+8)%NUMPIXELS, Wheel((frameCounter+128)%255));
+    strip.setPixelColor((frameCounter+8)%NUMPIXELS, Wheel(frameCounter+byte(128)));
     strip.show();
   }
   if (enc_action > 0) {
